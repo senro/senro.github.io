@@ -144,9 +144,12 @@ ref.on("value", function(datasnapshot) {
         update(root);
         //centerNode(root);
 
-        //同步数据到云端
-        var obj=getOriginData(projects);
-        ref.set(obj);
+        setTimeout(function(){
+             //同步数据到云端
+             var obj=getOriginData(projects);
+             ref.set(obj);
+        },200);
+       
 
         console.log('保存成功！');
 
