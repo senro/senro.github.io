@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>senro 接口文档管理器</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="bootstrap-3.3.4-dist/css/bootstrap.css"/>
+    <style type="text/css">
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        body{
+            overflow: hidden;
+        }
+        .node {
+            cursor: pointer;
+        }
+
+        .overlay {
+            background-color: #EEE;
+        }
+
+        .node circle {
+            fill: #fff;
+            stroke: steelblue;
+            stroke-width: 1.5px;
+        }
+
+        .node text {
+            font-size: 10px;
+            font-family: sans-serif;
+        }
+
+        .link {
+            fill: none;
+            stroke: #ccc;
+            stroke-width: 1.5px;
+        }
+
+        .templink {
+            fill: none;
+            stroke: red;
+            stroke-width: 3px;
+        }
+
+        .ghostCircle.show {
+            display: block;
+        }
+
+        .ghostCircle, .activeDrag .ghostCircle {
+            display: none;
+        }
+        .searchBar{
+            position: absolute;
+            left: 50%;
+            top:10%;
+            width: 200px;
+            margin: 0 0 0 -50px;
+        }
+        .modifyInput{
+            width: 200px;
+            height: 40px;
+            padding: 0;
+        }
+        input{
+            transform-origin:0 0;
+        }
+        .modifyInput,.buttons{
+            display: none;
+            position: absolute;
+        }
+
+        .menu{
+            position: absolute;
+            left: 0;
+            top:0;
+            width: 200px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+        }
+        .nav li{
+            position: relative;
+        }
+        .btn-del{
+            visibility: hidden;
+            position: absolute !important;
+            width: 38px;
+            height: 40px;
+            text-align: center;
+            line-height: 28px;
+            right: 0;
+            top:0;
+        }
+        .nav a:hover{
+            background-color: #eaeaea;
+        }
+        .nav li:hover>.btn-del{
+            visibility: visible;
+        }
+
+        .btn-intro{
+            position: absolute;
+            right: 0;
+            top:0;
+        }
+
+        .copyright{
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            padding: 10px;
+        }
+        .none{
+            display: none;
+        }
+    </style>
+
+</head>
+<body>
+<a class="btn btn-intro" href="#" data-toggle="modal" data-target="#myModal">
+    <span class="glyphicon glyphicon-info-sign"></span>&nbsp;&nbsp;帮助
+</a>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">使用帮助</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    1.左上角可以添加，删除项目。
+                </p>
+                <p>
+                    2.可以输入类目关键搜索，支持模糊查询。
+                </p>
+                <p>
+                    3.点击文字可以修改文字。
+                </p>
+                <p>
+                    4.点击圆点可以折叠子类。
+                </p>
+                <p>
+                    5.右击文字可以打开菜单。
+                </p>
+                <p>
+                    6.拖动文字可以任意改变父子关系。
+                </p>
+                <p>
+                    7.所有操作自动同步到云端，刷新可看效果。
+                </p>
+                <p>
+                    8.界面支持拖动，和滚轮缩放。
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="modal-alert" tabindex="-1" role="dialog" aria-labelledby="modal-alert">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modal-alert-title">导出详情</h4>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="menu">
+    <div class="input-group none">
+        <input type="text" class="form-control" placeholder="输入项目名">
+        <span class="input-group-btn">
+        <button class="btn btn-default btn-searchProject" type="button">筛选</button>
+        </span>
+    </div>
+
+    <ul class="nav nav-pills nav-stacked">
+        <script type="text/html" id="menuTmpl">
+            {{ if children && children.length > 0 }}
+                {{each children as item i}}
+                    {{ if item.active }}
+                         <li role="presentation" class="active">
+                    {{ else }}
+                        <li role="presentation">
+                    {{ /if }}
+
+                        <a href="#{{ item.name }}" data-id="{{ i }}">
+                            {{ item.name }}
+                        </a>
+
+                        <button class="btn btn-danger btn-del" data-id="{{ i }}">
+                            <span class="glyphicon glyphicon-minus"></span>
+                        </button>
+                    </li>
+                {{/each}}
+            {{ else }}
+
+            {{ /if }}
+        </script>
+    </ul>
+
+    <div class="input-group">
+        <input type="text" class="form-control input-addProject" placeholder="增加项目名">
+        <span class="input-group-btn">
+        <button class="btn btn-default btn-addProject" type="button">
+            <span class="glyphicon glyphicon-plus"></span>
+        </button>
+        </span>
+    </div>
+</div>
+
+<div class="buttons">
+    <button type="button" class="btn btn-primary add">增加子节点</button>
+    <button type="button" class="btn btn-danger del">删除该节点</button>
+    <button type="button" class="btn btn-default export">导出该节点</button>
+</div>
+
+<div class="input-group searchBar">
+    <input type="text" class="form-control searchInput" placeholder="输入关键字">
+        <span class="input-group-btn">
+    <button class="btn btn-default searchBtn" type="button">
+        <span class="glyphicon glyphicon-search"></span>
+    </button>
+    </span>
+</div>
+
+<textarea class="form-control modifyInput"></textarea>
+
+<div id="tree-container"></div>
+
+<div class="copyright">
+    Senro Design<br/>
+    CopyRight © <a href="http://senro.cn">senro.cn</a> <br/>
+    2016.04.15
+</div>
+<script src="./js/sugar.min.js"></script>
+<script src = "./js/wilddog.js" ></script>
+<script src="./js/observe.js"></script>
+<script src="./js/template.js"></script>
+<script src="./js/jquery-1.10.2.min.js"></script>
+<script src="bootstrap-3.3.4-dist/js/bootstrap.js"></script>
+<script src="./js/d3.v3.min.js"></script>
+<script src="./js/dndTree.js"></script>
+</body>
+</html>
