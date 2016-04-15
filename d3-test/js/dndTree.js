@@ -153,6 +153,8 @@ ref.on("value", function(datasnapshot) {
 
         console.log('保存成功！');
 
+        return false;
+
     });
 
     //删除项目
