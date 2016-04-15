@@ -103,24 +103,6 @@ ref.on("value", function(datasnapshot) {
 
 
     //初始化菜单
-    //var projects={
-    //    name:"菜单",
-    //    data:{},
-    //    children:[
-    //        {name:"B平台",active:true,data:{
-    //            name:"B平台",
-    //            data:{}
-    //        }},
-    //        {name:"Hue",active:false,data:{
-    //            name:"Hue",
-    //            data:{}
-    //        }},
-    //        {name:"C平台",active:false,data:{
-    //            name:"C平台",
-    //            data:{}
-    //        }}
-    //    ]
-    //};
     var $menu=$('.menu');
     var menuRender=template.compile(menuTmpl);
     updateMenu();
@@ -128,10 +110,11 @@ ref.on("value", function(datasnapshot) {
         $menu.find('.nav').html(menuRender(projects));
     }
 
-    $menu.find('.nav a').unbind('click');
-    $menu.find('.btn').unbind('click');
+    //$menu.unbind('click');
+    //$menu.find('.btn').unbind('click');
+
     //点击项目
-    $menu.find('.nav a').click(function(){
+    $menu.on('click','.nav a',function(){
         var index=$(this).attr('data-id');
         projects.children.each(function(item,i){
             item.active=false;
@@ -144,21 +127,16 @@ ref.on("value", function(datasnapshot) {
         update(root);
         //centerNode(root);
 
-        setTimeout(function(){
-             //同步数据到云端
-             var obj=getOriginData(projects);
-             ref.set(obj);
-        },200);
-       
+        //同步数据到云端
+        var obj=getOriginData(projects);
+        ref.set(obj);
 
         console.log('保存成功！');
-
-        return false;
 
     });
 
     //删除项目
-    $menu.find('.nav .btn-del').click(function(){
+    $menu.on('click','.nav .btn-del',function(){
         var index=$(this).attr('data-id');
 
         projects.children.removeAt(index);
@@ -172,6 +150,7 @@ ref.on("value", function(datasnapshot) {
         return false;
     });
 
+    $menu.find('.btn-addProject').unbind('click');
     //增加项目
     $menu.find('.btn-addProject').click(function(){
         var $addInput=$menu.find('.input-addProject');
