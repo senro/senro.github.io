@@ -128,8 +128,10 @@ ref.on("value", function(datasnapshot) {
         $menu.find('.nav').html(menuRender(projects));
     }
 
+    $menu.find('.nav a').unbind('click');
+    $menu.find('.btn').unbind('click');
     //点击项目
-    $menu.on('click','.nav a',function(){
+    $menu.find('.nav a').click(function(){
         var index=$(this).attr('data-id');
         projects.children.each(function(item,i){
             item.active=false;
@@ -151,7 +153,7 @@ ref.on("value", function(datasnapshot) {
     });
 
     //删除项目
-    $menu.on('click','.nav .btn-del',function(){
+    $menu.find('.nav .btn-del').click(function(){
         var index=$(this).attr('data-id');
 
         projects.children.removeAt(index);
