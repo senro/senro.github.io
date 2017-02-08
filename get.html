@@ -14,11 +14,12 @@
   <body ng-app="app" ng-strict-di ng-cloak>
 
     <div id="app">
-      Loading...
+      Loading2...
     </div>
+    <script src="//cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
   <script>
     alert(navigator.userAgent);
-    document.getElementById("app").innerHTML=navigator.userAgent;
+    $("app").html(navigator.userAgent);
   </script>
   </body>
 </html>
