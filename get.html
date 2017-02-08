@@ -13,11 +13,12 @@
   
   <body ng-app="app" ng-strict-di ng-cloak>
 
-    <app>
+    <div id="app">
       Loading...
-    </app>
+    </div>
   <script>
     alert(navigator.userAgent);
+    document.getElementById("app").innerHTML=navigator.userAgent;
   </script>
   </body>
 </html>
