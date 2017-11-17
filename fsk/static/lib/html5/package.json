@@ -1,0 +1,19 @@
+{
+  "name": "html5",
+  "version": "0.0.2",
+  "description": "html5",
+  "keywords": [
+    "html5",
+    "html5"
+  ],
+  "homepage": "",
+  "author": "haowu-team",
+  "spm": {
+    "main": "",
+    "type": "js",
+    "dependencies": {},
+    "devDependencies": {
+      "expect.js": "0.3.1"
+    }
+  }
+}

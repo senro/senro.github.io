@@ -1,0 +1,9 @@
+{
+  "env":"dev",
+  "dev":{
+    "apiHost":"/api/"
+  },
+  "prod":{
+    "apiHost":"/api/"
+  }
+}
